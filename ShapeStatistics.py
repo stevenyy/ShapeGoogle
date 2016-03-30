@@ -39,6 +39,10 @@ def samplePointCloud(mesh, N):
     #by its root mean square distance to the origin.  Note that this
     #does not change the normals at all, only the points, since it's a
     #uniform scale
+    centroid = np.mean(Ps, 1)[:, None] #return 3 by 1
+    Ps -= centroid; #broadcasting
+    scale = np.sqrt(np.sum(np.sum(np.square(Ps),axis=0)),axis=1)        
+    Ps /= scale;
     return (Ps, Ns)
 
 #Purpose: To sample the unit sphere as evenly as possible.  The higher
@@ -67,11 +71,20 @@ def doPCA(X):
 #NShells (number of shells), RMax (maximum radius)
 #Returns: hist (histogram of length NShells)
 def getShapeHistogram(Ps, Ns, NShells, RMax):
-    hist = np.zeros(NShells)
-    
-    ##TODO: Finish this; fill in hist
-    
+
+    bins = np.linspace(0, RMax, NShells);
+    disList = np.sqrt(np.sum(np.square(Ps), axis=0));
+    digitized = np.digitized(disList, bins); #using the digitalized method
+    freqList = zeros(shape(bins)-1);
+    for n in digitized{
+        freqList[n]++;  
+    }
+
+    hist = np.histogram(freqList, bins=bins);
     return hist
+
+    # unique, counts = np.unique(disList, return_counts=True); #using the unique method to sort and count at the same time
+
     
 #Purpose: To create shape histogram with concentric spherical shells and
 #sectors within each shell, sorted in decreasing order of number of points
@@ -84,6 +97,11 @@ def getShapeShellHistogram(Ps, Ns, NShells, RMax, SPoints):
     #points sampled on the sphere
     #Create a 2D histogram that is NShells x NSectors
     hist = np.zeros((NShells, NSectors))    
+    bins = np.linspace(0, RMax, NShells);
+    
+
+
+
     ##TODO: Finish this; fill in hist, then sort sectors in descending order   
     return hist.flatten() #Flatten the 2D histogram to a 1D array
 
