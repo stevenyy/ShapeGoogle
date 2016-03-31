@@ -207,8 +207,13 @@ def makeAllHistograms(PointClouds, Normals, histFunction, *args):
 #distance between the histogram for point cloud i and point cloud j)
 def compareHistsEuclidean(AllHists):
     N = AllHists.shape[1]
-    D = np.zeros((N, N))
-    #TODO: Finish this, fill in D
+    NormHists = AllHists / (AllHists.sum(axis=0)*1.0)
+    HistsSquare = np.zeros((N,1))
+    HistsSquare = np.sum(NormHists*NormHists,0)
+    P = HistsSquare[:,None] + HistsSquare[None,:]
+    Q = np.dot(np.transpose(NormHists), NormHists)
+    D = np.subtract(P, np.multiply(2,Q))
+    D = np.sqrt(D)
     return D
 
 #Purpose: To compute the cosine distance between a set
@@ -219,8 +224,13 @@ def compareHistsEuclidean(AllHists):
 #distance between the histogram for point cloud i and point cloud j)
 def compareHistsCosine(AllHists):
     N = AllHists.shape[1]
+    NormHists = AllHists / (AllHists.sum(axis=0)*1.0)
     D = np.zeros((N, N))
-    #TODO: Finish this, fill in D
+    for i in range(N):
+        for j in range(i+1):
+            D[i,j]= np.dot(NormHists[:,i],NormHists[:,j])/np.linalg.norm(NormHists[:,j])/np.linalg.norm(NormHists[:,i])
+            D[j,i]=D[i,j]
+    
     return D
 
 #Purpose: To compute the cosine distance between a set
@@ -231,8 +241,15 @@ def compareHistsCosine(AllHists):
 #distance between the histogram for point cloud i and point cloud j)
 def compareHistsChiSquared(AllHists):
     N = AllHists.shape[1]
+    K = AllHists.shape[0]
+    NormHists = AllHists / (AllHists.sum(axis=0)*1.0)
     D = np.zeros((N, N))
-    #TODO: Finish this, fill in D
+    for i in range(N):
+        for j in range(i):
+            for k in range(K):
+                D[i,j]= D[i,j]+(NormHists[k,i]-NormHists[k,j])**2/((NormHists[k,i]+NormHists[k,j])*1.0)/2.0
+            D[j,i]=D[i,j]
+    
     return D
 
 #Purpose: To compute the 1D Earth mover's distance between a set
@@ -243,8 +260,15 @@ def compareHistsChiSquared(AllHists):
 #distance between the histogram for point cloud i and point cloud j)
 def compareHistsEMD1D(AllHists):
     N = AllHists.shape[1]
+    K = AllHists.shape[0]
+    NormHists = AllHists / (AllHists.sum(axis=0)*1.0)
     D = np.zeros((N, N))
-    #TODO: Finish this, fill in D
+    for i in range(N):
+        for j in range(i):
+            for k in range(K):
+                D[i,j]= D[i,j]+abs(NormHists[k,i]-NormHists[k,j])
+            D[j,i]=D[i,j]
+    
     return D
 
 
