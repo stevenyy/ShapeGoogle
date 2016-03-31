@@ -135,7 +135,15 @@ def getD2Histogram(Ps, Ns, DMax, NBins, NSamples):
 #NSamples (number of triples of points sample to compute angles)
 def getA3Histogram(Ps, Ns, NBins, NSamples):
     hist = np.zeros(NBins)
-    ##TODO: Finish this; fill in hist
+    for i in range(NSamples):
+        p1 = np.random.random_integers(0, P.shape[1]-1)
+        p2 = np.random.random_integers(0, P.shape[1]-1)
+        p3 = np.random.random_integers(0, P.shape[1]-1)
+        v1 = Ps[:,p2] - Ps[:,p1]
+        v2 = Ps[:,p2] - Ps[:,p3]
+        theta = np.arccos(np.dot(v1,v2)/(numpy.linalg.norm(v1)*numpy.linalg.norm(v2)*1.0))
+        num = theta/(np.pi/NBins)
+        hist[num] = hist[num]+1
     return hist
 
 #Purpose: To create the Extended Gaussian Image by binning normals to
