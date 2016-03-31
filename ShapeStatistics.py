@@ -136,12 +136,14 @@ def getD2Histogram(Ps, Ns, DMax, NBins, NSamples):
 def getA3Histogram(Ps, Ns, NBins, NSamples):
     hist = np.zeros(NBins)
     for i in range(NSamples):
-        p1 = np.random.random_integers(0, P.shape[1]-1)
-        p2 = np.random.random_integers(0, P.shape[1]-1)
-        p3 = np.random.random_integers(0, P.shape[1]-1)
+        p1 = np.random.random_integers(0, Ps.shape[1]-1)
+        p2 = np.random.random_integers(0, Ps.shape[1]-1)
+        p3 = np.random.random_integers(0, Ps.shape[1]-1)
         v1 = Ps[:,p2] - Ps[:,p1]
         v2 = Ps[:,p2] - Ps[:,p3]
-        theta = np.arccos(np.dot(v1,v2)/(numpy.linalg.norm(v1)*numpy.linalg.norm(v2)*1.0))
+        if (np.linalg.norm(v1)*np.linalg.norm(v2)*1.0)==0:
+            continue
+        theta = np.arccos(np.dot(v1,v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)*1.0))
         num = theta/(np.pi/NBins)
         hist[num] = hist[num]+1
     return hist
