@@ -112,8 +112,11 @@ def getShapeHistogramPCA(Ps, Ns, NShells, RMax):
 #NBins (number of histogram bins), NSamples (number of pairs of points sample
 #to compute distances)
 def getD2Histogram(Ps, Ns, DMax, NBins, NSamples):
-    hist = np.zeros(NBins)
-    ##TODO: Finish this; fill in hist
+    N = Ps.shape[1]
+    S1 = Ps[:, np.random.random_integers(0, N-1, NSamples)]
+    S2 = Ps[:, np.random.random_integers(0, N-1, NSamples)]
+    D2 = np.sqrt(np.sum((S1-S2)**2, 0))
+    hist, be = np.histogram(D2, NBins, (0, DMax))
     return hist
 
 #Purpose: To create shape histogram of the angles between randomly sampled
@@ -237,7 +240,7 @@ def compareHistsCosine(AllHists):
             D[i,j]= np.dot(NormHists[:,i],NormHists[:,j])/np.linalg.norm(NormHists[:,j])/np.linalg.norm(NormHists[:,i])
             D[j,i]=D[i,j]
     
-    return D
+    return 1-D
 
 #Purpose: To compute the cosine distance between a set
 #of histograms
@@ -347,19 +350,19 @@ if __name__ == '__main__':
     HistsSpin = makeAllHistograms(PointClouds, Normals, getSpinImage, 100, 2, 40)
     # HistsEGI = makeAllHistograms(PointClouds, Normals, getEGIHistogram, SPoints)
     # HistsA3 = makeAllHistograms(PointClouds, Normals, getA3Histogram, 30, 100000)
-    # HistsD2 = makeAllHistograms(PointClouds, Normals, getD2Histogram, 3.0, 30, 100000)
+    HistsD2 = makeAllHistograms(PointClouds, Normals, getD2Histogram, 3.0, 30, 100000)
 
     DSH = compareHistsEuclidean(HistsSH)
     DSpin = compareHistsEuclidean(HistsSpin)
     # DEGI = compareHistsEuclidean(HistsEGI)
     # DA3 = compareHistsEuclidean(HistsA3)
-    # DD2 = compareHistsEuclidean(HistsD2)
+    DD2 = compareHistsEuclidean(HistsD2)
 
     PRSH = getPrecisionRecall(DSH)
     PRSpin = getPrecisionRecall(DSpin)
     # PREGI = getPrecisionRecall(DEGI)
     # PRA3 = getPrecisionRecall(DA3)
-    # PRD2 = getPrecisionRecall(DD2)
+    PRD2 = getPrecisionRecall(DD2)
 
     recalls = np.linspace(1.0/9.0, 1.0, 9)
     plt.hold(True)
@@ -367,7 +370,7 @@ if __name__ == '__main__':
     plt.plot(recalls, PRSpin, 'b', label='Spin')
     # plt.plot(recalls, PREGI, 'c', label='EGI')
     # plt.plot(recalls, PRA3, 'k', label='A3')
-    # plt.plot(recalls, PRD2, 'r', label='D2')
+    plt.plot(recalls, PRD2, 'r', label='D2')
     plt.xlabel('Recall')
     plt.ylabel('Precision')
     plt.legend()
