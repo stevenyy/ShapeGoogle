@@ -41,7 +41,7 @@ def samplePointCloud(mesh, N):
     #uniform scale
     centroid = np.mean(Ps, 1)[:, None] #return 3 by 1
     Ps -= centroid; #broadcasting
-    scale = np.sqrt(np.sum(np.sum(np.square(Ps),axis=0)),axis=1)        
+    scale = np.sqrt(np.sum(np.square(Ps))/N)        
     Ps /= scale;
     return (Ps, Ns)
 
@@ -218,6 +218,7 @@ def compareHistsEuclidean(AllHists):
     P = HistsSquare[:,None] + HistsSquare[None,:]
     Q = np.dot(np.transpose(NormHists), NormHists)
     D = np.subtract(P, np.multiply(2,Q))
+    D[D < 0] = 0
     D = np.sqrt(D)
     return D
 
@@ -311,12 +312,13 @@ def getMyShapeDistances(PointClouds, Normals):
 #Returns PR, an (NPerClass-1) length array of average precision values for all 
 #recalls
 def getPrecisionRecall(D, NPerClass = 10):
-    sortIdx = np.argsort(D, 1)
-    B = np.zeros(D.shape[0])[:, None] + np.arange(D.shape[1])[None, :]
-    under = B[sortIdx < NPerClass].reshape(D.shape[0], NPerClass)[:, 1:]
+    N = D.shape[0]
+    W = np.floor(np.linspace(0, N/NPerClass, N, False))
+    sortIdx = np.floor(np.argsort(D, 1) / NPerClass - W[:, None])
+    B = np.zeros(N)[:, None] + np.arange(N)[None, :]
+    under = B[sortIdx == 0].reshape(N, NPerClass)[:, 1:]
     up = np.arange(NPerClass-1)+1
-    PR = np.mean(up/under, 0)
-    return PR
+    return np.mean(up/under, 0)
 
 #########################################################
 ##                     MAIN TESTS                      ##
@@ -339,6 +341,37 @@ if __name__ == '__main__':
             (Ps, Ns) = samplePointCloud(m, NRandSamples)
             PointClouds.append(Ps)
             Normals.append(Ns)
+
+    SPoints = getSphereSamples(2)
+    HistsSH = makeAllHistograms(PointClouds, Normals, getShapeHistogram, 10, 3)
+    HistsSpin = makeAllHistograms(PointClouds, Normals, getSpinImage, 100, 2, 40)
+    # HistsEGI = makeAllHistograms(PointClouds, Normals, getEGIHistogram, SPoints)
+    # HistsA3 = makeAllHistograms(PointClouds, Normals, getA3Histogram, 30, 100000)
+    # HistsD2 = makeAllHistograms(PointClouds, Normals, getD2Histogram, 3.0, 30, 100000)
+
+    DSH = compareHistsEuclidean(HistsSH)
+    DSpin = compareHistsEuclidean(HistsSpin)
+    # DEGI = compareHistsEuclidean(HistsEGI)
+    # DA3 = compareHistsEuclidean(HistsA3)
+    # DD2 = compareHistsEuclidean(HistsD2)
+
+    PRSH = getPrecisionRecall(DSH)
+    PRSpin = getPrecisionRecall(DSpin)
+    # PREGI = getPrecisionRecall(DEGI)
+    # PRA3 = getPrecisionRecall(DA3)
+    # PRD2 = getPrecisionRecall(DD2)
+
+    recalls = np.linspace(1.0/9.0, 1.0, 9)
+    plt.hold(True)
+    plt.plot(recalls, PRSH, 'y', label='SH')
+    plt.plot(recalls, PRSpin, 'b', label='Spin')
+    # plt.plot(recalls, PREGI, 'c', label='EGI')
+    # plt.plot(recalls, PRA3, 'k', label='A3')
+    # plt.plot(recalls, PRD2, 'r', label='D2')
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.legend()
+    plt.show()
     
     #TODO: Finish this, run experiments.  Also in the above code, you might
     #just want to load one point cloud and test your histograms on that first
