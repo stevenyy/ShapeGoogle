@@ -55,10 +55,7 @@ def getSphereSamples(res = 2):
 #Purpose: To compute PCA on a point cloud
 #Inputs: X (3 x N array representing a point cloud)
 def doPCA(X):
-    ##TODO: Fill this in for a useful helper function
-    eigs = np.array([1, 1, 1]) #Dummy value
-    V = np.eye(3) #Dummy Value
-    return (eigs, V)
+    return np.linalg.eigh(X.dot(X.T))
 
 #########################################################
 ##                SHAPE DESCRIPTORS                    ##
@@ -71,21 +68,12 @@ def doPCA(X):
 #NShells (number of shells), RMax (maximum radius)
 #Returns: hist (histogram of length NShells)
 def getShapeHistogram(Ps, Ns, NShells, RMax):
+    H = np.sqrt(np.sum(Ps**2, 0))[None, :] - np.linspace(0, RMax, NShells, False)[:, None]
+    S = np.sum((H >= 0).reshape(NShells, Ps.shape[1]), 1)
+    N = np.resize(S[1:], NShells)
+    N[-1] = np.sum(np.sqrt(np.sum(Ps**2, 0)) > RMax)
+    return S-N
 
-    bins = np.linspace(0, RMax, NShells);
-    disList = np.sqrt(np.sum(np.square(Ps), axis=0));
-    digitized = np.digitized(disList, bins); #using the digitalized method
-    freqList = zeros(shape(bins)-1);
-    for n in digitized{
-        freqList[n]++;  
-    }
-
-    hist = np.histogram(freqList, bins=bins);
-    return hist
-
-    # unique, counts = np.unique(disList, return_counts=True); #using the unique method to sort and count at the same time
-
-    
 #Purpose: To create shape histogram with concentric spherical shells and
 #sectors within each shell, sorted in decreasing order of number of points
 #Inputs: Ps (3 x N point cloud), Ns (3 x N array of normals) (not needed here
@@ -168,10 +156,17 @@ def getEGIHistogram(Ps, Ns, SPoints):
 #each minor axis
 def getSpinImage(Ps, Ns, NAngles, Extent, Dim):
     #Create an image
-    hist = np.zeros((Dim, Dim))
-    #TODO: Finish this
+    eigs, V = doPCA(Ps)
+    P = V[:, :2].T.dot(Ps)
+    As = np.linspace(0, 2*np.pi, NAngles, False)
+    C, S = np.cos(As), np.sin(As)
+    A = np.zeros((NAngles, 2, 2))
+    A[:, 0, 0], A[:, 0, 1], A[:, 1, 0], A[:, 1, 1] = C, -S, S, C
+    P = A.dot(P)
+    x = P[:, 0, :].flatten()
+    y = P[:, 1, :].flatten()
+    hist, xe, ye = np.histogram2d(x, y, Dim, [[-Extent, Extent], [-Extent, Extent]])
     return hist.flatten()
-
 
 #Purpose: To create a histogram of spherical harmonic magnitudes in concentric
 #spheres after rasterizing the point cloud to a voxel grid
@@ -316,9 +311,11 @@ def getMyShapeDistances(PointClouds, Normals):
 #Returns PR, an (NPerClass-1) length array of average precision values for all 
 #recalls
 def getPrecisionRecall(D, NPerClass = 10):
-    PR = np.zeros(NPerClass-1)
-    #TODO: Finish this, compute average precision recall graph
-    #using all point clouds as queries
+    sortIdx = np.argsort(D, 1)
+    B = np.zeros(D.shape[0])[:, None] + np.arange(D.shape[1])[None, :]
+    under = B[sortIdx < NPerClass].reshape(D.shape[0], NPerClass)[:, 1:]
+    up = np.arange(NPerClass-1)+1
+    PR = np.mean(up/under, 0)
     return PR
 
 #########################################################
@@ -341,7 +338,7 @@ if __name__ == '__main__':
             m.loadOffFileExternal(filename)
             (Ps, Ns) = samplePointCloud(m, NRandSamples)
             PointClouds.append(Ps)
-            Normals.append(Ps)
+            Normals.append(Ns)
     
     #TODO: Finish this, run experiments.  Also in the above code, you might
     #just want to load one point cloud and test your histograms on that first
