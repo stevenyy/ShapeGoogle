@@ -373,6 +373,7 @@ if __name__ == '__main__':
     # SPoints = getSphereSamples(2)
     # HistsSH = makeAllHistograms(PointClouds, Normals, getShapeHistogram, 30, 3)
     # HistsSSH = makeAllHistograms(PointClouds, Normals, getShapeShellHistogram, 30, 3, SPoints)
+    HistsSHPCA = makeAllHistograms(PointClouds, Normals, getShapeHistogramPCA, 30, 3)
     # HistsSpin = makeAllHistograms(PointClouds, Normals, getSpinImage, 100, 2, 40)
     # # HistsEGI = makeAllHistograms(PointClouds, Normals, getEGIHistogram, SPoints)
     # HistsA3 = makeAllHistograms(PointClouds, Normals, getA3Histogram, 30, 100000)
@@ -380,6 +381,7 @@ if __name__ == '__main__':
 
     # DSH = compareHistsEuclidean(HistsSH)
     # DSSH = compareHistsEuclidean(HistsSSH)
+    DSSHPCA = compareHistsEuclidean(HistsSHPCA)
     # DSpin = compareHistsEuclidean(HistsSpin)
     # # DEGI = compareHistsEuclidean(HistsEGI)
     # DA3 = compareHistsEuclidean(HistsA3)
@@ -387,6 +389,7 @@ if __name__ == '__main__':
 
     # PRSH = getPrecisionRecall(DSH)
     # PRSSH = getPrecisionRecall(DSSH)
+    PRSHPCA = getPrecisionRecall(DSSHPCA)
     # PRSpin = getPrecisionRecall(DSpin)
     # # PREGI = getPrecisionRecall(DEGI)
     # PRA3 = getPrecisionRecall(DA3)
@@ -394,6 +397,7 @@ if __name__ == '__main__':
 
     # plt.plot(recalls, PRSH, 'g', label='Basic Shell')
     # plt.plot(recalls, PRSSH, 'y', label='Sorted Sectors')
+    plt.plot(recalls, PRSHPCA, 'm', label='Shell PCA')
     # plt.plot(recalls, PRSpin, 'b', label='Spin')
     # # plt.plot(recalls, PREGI, 'c', label='EGI')
     # plt.plot(recalls, PRA3, 'k', label='A3')
@@ -471,18 +475,18 @@ if __name__ == '__main__':
 
 
 
-    # Spin Images with different values of NAngles
-    PRSpin1 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 25, 2, 40)))
-    PRSpin2 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 50, 2, 40)))
-    PRSpin3 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 100, 2, 40)))
-    PRSpin4 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 200, 2, 40)))
-    PRSpin5 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 400, 2, 40)))
+    # # Spin Images with different values of NAngles (little difference)
+    # PRSpin1 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 25, 2, 40)))
+    # PRSpin2 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 50, 2, 40)))
+    # PRSpin3 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 100, 2, 40)))
+    # PRSpin4 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 200, 2, 40)))
+    # PRSpin5 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 400, 2, 40)))
 
-    plt.plot(recalls, PRSpin1, 'y', label='25 Angles')
-    plt.plot(recalls, PRSpin2, 'b', label='50 Angles')
-    plt.plot(recalls, PRSpin3, 'c', label='100 Angles')
-    plt.plot(recalls, PRSpin4, 'k', label='200 Angles')
-    plt.plot(recalls, PRSpin5, 'r', label='400 Angles')
+    # plt.plot(recalls, PRSpin1, 'y', label='25 Angles')
+    # plt.plot(recalls, PRSpin2, 'b', label='50 Angles')
+    # plt.plot(recalls, PRSpin3, 'c', label='100 Angles')
+    # plt.plot(recalls, PRSpin4, 'k', label='200 Angles')
+    # plt.plot(recalls, PRSpin5, 'r', label='400 Angles')
 
 
 
