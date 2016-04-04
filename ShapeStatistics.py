@@ -125,18 +125,22 @@ def getD2Histogram(Ps, Ns, DMax, NBins, NSamples):
 #but passed along for consistency), NBins (number of histogram bins), 
 #NSamples (number of triples of points sample to compute angles)
 def getA3Histogram(Ps, Ns, NBins, NSamples):
-    hist = np.zeros(NBins)
-    for i in range(NSamples):
-        p1 = np.random.random_integers(0, Ps.shape[1]-1)
-        p2 = np.random.random_integers(0, Ps.shape[1]-1)
-        p3 = np.random.random_integers(0, Ps.shape[1]-1)
-        v1 = Ps[:,p2] - Ps[:,p1]
-        v2 = Ps[:,p2] - Ps[:,p3]
-        if (np.linalg.norm(v1)*np.linalg.norm(v2)*1.0)==0:
-            continue
-        theta = np.arccos(np.dot(v1,v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)*1.0))
-        num = theta/(np.pi/NBins)
-        hist[num] = hist[num]+1
+    N = Ps.shape[1]
+    S1 = Ps[:, np.random.random_integers(0, N-1, NSamples)]
+    S2 = Ps[:, np.random.random_integers(0, N-1, NSamples)]
+    S3 = Ps[:, np.random.random_integers(0, N-1, NSamples)]
+    V1 = S1 - S2
+    L1 = np.sqrt(np.sum(V1**2, 0))
+    V2 = S1 - S3
+    L2 = np.sqrt(np.sum(V2**2, 0))
+    valid = (L1 > 0) * (L2 > 0)
+    V1 = V1[:, valid] / L1[valid]
+    V2 = V2[:, valid] / L2[valid]
+    C = np.sum(V1*V2, 0)
+    D2S = np.sum((V1-V2)**2, 0)
+    C[D2S == 0] = 1
+    A3 = np.arccos(C)
+    hist, be = np.histogram(A3, NBins, (0, np.pi))
     return hist
 
 #Purpose: To create the Extended Gaussian Image by binning normals to
@@ -349,19 +353,19 @@ if __name__ == '__main__':
     HistsSH = makeAllHistograms(PointClouds, Normals, getShapeHistogram, 10, 3)
     HistsSpin = makeAllHistograms(PointClouds, Normals, getSpinImage, 100, 2, 40)
     # HistsEGI = makeAllHistograms(PointClouds, Normals, getEGIHistogram, SPoints)
-    # HistsA3 = makeAllHistograms(PointClouds, Normals, getA3Histogram, 30, 100000)
+    HistsA3 = makeAllHistograms(PointClouds, Normals, getA3Histogram, 30, 100000)
     HistsD2 = makeAllHistograms(PointClouds, Normals, getD2Histogram, 3.0, 30, 100000)
 
     DSH = compareHistsEuclidean(HistsSH)
     DSpin = compareHistsEuclidean(HistsSpin)
     # DEGI = compareHistsEuclidean(HistsEGI)
-    # DA3 = compareHistsEuclidean(HistsA3)
+    DA3 = compareHistsEuclidean(HistsA3)
     DD2 = compareHistsEuclidean(HistsD2)
 
     PRSH = getPrecisionRecall(DSH)
     PRSpin = getPrecisionRecall(DSpin)
     # PREGI = getPrecisionRecall(DEGI)
-    # PRA3 = getPrecisionRecall(DA3)
+    PRA3 = getPrecisionRecall(DA3)
     PRD2 = getPrecisionRecall(DD2)
 
     recalls = np.linspace(1.0/9.0, 1.0, 9)
@@ -369,7 +373,7 @@ if __name__ == '__main__':
     plt.plot(recalls, PRSH, 'y', label='SH')
     plt.plot(recalls, PRSpin, 'b', label='Spin')
     # plt.plot(recalls, PREGI, 'c', label='EGI')
-    # plt.plot(recalls, PRA3, 'k', label='A3')
+    plt.plot(recalls, PRA3, 'k', label='A3')
     plt.plot(recalls, PRD2, 'r', label='D2')
     plt.xlabel('Recall')
     plt.ylabel('Precision')
