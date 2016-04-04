@@ -40,7 +40,7 @@ def samplePointCloud(mesh, N):
     #does not change the normals at all, only the points, since it's a
     #uniform scale
     centroid = np.mean(Ps, 1)[:, None] #return 3 by 1
-    Ps -= centroid; #broadcasting
+    Ps -= centroid;
     scale = np.sqrt(np.sum(np.square(Ps))/N)        
     Ps /= scale;
     return (Ps, Ns)
@@ -85,13 +85,23 @@ def getShapeShellHistogram(Ps, Ns, NShells, RMax, SPoints):
     #points sampled on the sphere
     #Create a 2D histogram that is NShells x NSectors
     hist = np.zeros((NShells, NSectors))    
-    bins = np.linspace(0, RMax, NShells);
-    
+    bins = np.linspace(0, RMax, NShells, False)
 
-
-
-    ##TODO: Finish this; fill in hist, then sort sectors in descending order   
+    indx =  np.digitize(np.sqrt(np.sum(np.square(Ps, Ps), axis=0)), bins)
+    for i in range(NShells):
+        sub = Ps[:, indx == i]
+        D = np.dot(sub.T, SPoints)
+        dir = np.argmax(D, 1) 
+        count = np.bincount(dir)
+        hist[i, :count.shape[0]] = np.sort(count)[::-1] 
     return hist.flatten() #Flatten the 2D histogram to a 1D array
+
+    #alternative approach
+    # raw = SPoints.T.dot(Ps)
+    # sector = np.argmax(raw, axis=0)
+    # dist = np.sqrt(np.sum(np.square(Ps)))
+    # combined = zip(sector, dist) #combine two list into tuples
+    # sorted(combined, key=lambda x: x[0]) #sort the list according to dist value
 
 #Purpose: To create shape histogram with concentric spherical shells and to 
 #compute the PCA eigenvalues in each shell
