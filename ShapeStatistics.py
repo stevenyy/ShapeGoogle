@@ -55,7 +55,7 @@ def getSphereSamples(res = 2):
 #Purpose: To compute PCA on a point cloud
 #Inputs: X (3 x N array representing a point cloud)
 def doPCA(X):
-    return np.linalg.eigh(X.dot(X.T))
+    return np.linalg.eig(X.dot(X.T))
 
 #########################################################
 ##                SHAPE DESCRIPTORS                    ##
@@ -116,8 +116,8 @@ def getShapeHistogramPCA(Ps, Ns, NShells, RMax):
     indx = np.digitize(np.sqrt(np.sum(np.square(Ps), axis=0)), bins)
     for i in range(NShells):
         sub = Ps[:, indx == i]
-        eigs = np.linalg.eig(sub.dot(sub.T))
-        hist[i, :] = np.sort(eigs)[::-1] # reverse order
+        (eigVs, eigVecs) = doPCA(sub)
+        hist[i, :] = np.sort(eigVs)[::-1] # reverse order, omitting eigs.shape(0)
     return hist.flatten() #Flatten the 2D histogram to a 1D array
 
 #Purpose: To create shape histogram of the pairwise Euclidean distances between
