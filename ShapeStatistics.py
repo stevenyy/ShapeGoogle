@@ -364,38 +364,129 @@ if __name__ == '__main__':
             PointClouds.append(Ps)
             Normals.append(Ns)
 
-    SPoints = getSphereSamples(2)
-    HistsSH = makeAllHistograms(PointClouds, Normals, getShapeHistogram, 10, 3)
-    HistsSpin = makeAllHistograms(PointClouds, Normals, getSpinImage, 100, 2, 40)
-    # HistsEGI = makeAllHistograms(PointClouds, Normals, getEGIHistogram, SPoints)
-    HistsA3 = makeAllHistograms(PointClouds, Normals, getA3Histogram, 30, 100000)
-    HistsD2 = makeAllHistograms(PointClouds, Normals, getD2Histogram, 3.0, 30, 100000)
-
-    DSH = compareHistsEuclidean(HistsSH)
-    DSpin = compareHistsEuclidean(HistsSpin)
-    # DEGI = compareHistsEuclidean(HistsEGI)
-    DA3 = compareHistsEuclidean(HistsA3)
-    DD2 = compareHistsEuclidean(HistsD2)
-
-    PRSH = getPrecisionRecall(DSH)
-    PRSpin = getPrecisionRecall(DSpin)
-    # PREGI = getPrecisionRecall(DEGI)
-    PRA3 = getPrecisionRecall(DA3)
-    PRD2 = getPrecisionRecall(DD2)
-
     recalls = np.linspace(1.0/9.0, 1.0, 9)
     plt.hold(True)
-    plt.plot(recalls, PRSH, 'y', label='SH')
-    plt.plot(recalls, PRSpin, 'b', label='Spin')
-    # plt.plot(recalls, PREGI, 'c', label='EGI')
-    plt.plot(recalls, PRA3, 'k', label='A3')
-    plt.plot(recalls, PRD2, 'r', label='D2')
+
+
+
+    # # Compare All Features
+    # SPoints = getSphereSamples(2)
+    # HistsSH = makeAllHistograms(PointClouds, Normals, getShapeHistogram, 30, 3)
+    # HistsSSH = makeAllHistograms(PointClouds, Normals, getShapeShellHistogram, 30, 3, SPoints)
+    # HistsSpin = makeAllHistograms(PointClouds, Normals, getSpinImage, 100, 2, 40)
+    # # HistsEGI = makeAllHistograms(PointClouds, Normals, getEGIHistogram, SPoints)
+    # HistsA3 = makeAllHistograms(PointClouds, Normals, getA3Histogram, 30, 100000)
+    # HistsD2 = makeAllHistograms(PointClouds, Normals, getD2Histogram, 3.0, 30, 100000)
+
+    # DSH = compareHistsEuclidean(HistsSH)
+    # DSSH = compareHistsEuclidean(HistsSSH)
+    # DSpin = compareHistsEuclidean(HistsSpin)
+    # # DEGI = compareHistsEuclidean(HistsEGI)
+    # DA3 = compareHistsEuclidean(HistsA3)
+    # DD2 = compareHistsEuclidean(HistsD2)
+
+    # PRSH = getPrecisionRecall(DSH)
+    # PRSSH = getPrecisionRecall(DSSH)
+    # PRSpin = getPrecisionRecall(DSpin)
+    # # PREGI = getPrecisionRecall(DEGI)
+    # PRA3 = getPrecisionRecall(DA3)
+    # PRD2 = getPrecisionRecall(DD2)
+
+    # plt.plot(recalls, PRSH, 'g', label='Basic Shell')
+    # plt.plot(recalls, PRSSH, 'y', label='Sorted Sectors')
+    # plt.plot(recalls, PRSpin, 'b', label='Spin')
+    # # plt.plot(recalls, PREGI, 'c', label='EGI')
+    # plt.plot(recalls, PRA3, 'k', label='A3')
+    # plt.plot(recalls, PRD2, 'r', label='D2')
+
+    
+
+    # # Basic Shell Histograms with different values of NShells
+    # PRSH1 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getShapeHistogram, 10, 3)))
+    # PRSH2 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getShapeHistogram, 20, 3)))
+    # PRSH3 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getShapeHistogram, 30, 3)))
+    # PRSH4 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getShapeHistogram, 40, 3)))
+    # PRSH8 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getShapeHistogram, 80, 3)))
+
+    # plt.plot(recalls, PRSH1, 'y', label='10 Shells')
+    # plt.plot(recalls, PRSH2, 'b', label='20 Shells')
+    # plt.plot(recalls, PRSH3, 'c', label='30 Shells')
+    # plt.plot(recalls, PRSH4, 'k', label='40 Shells')
+    # plt.plot(recalls, PRSH8, 'r', label='80 Shells')
+
+
+
+    # # D2 Histograms with different values of NSamples
+    # PRD2a = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getD2Histogram, 3.0, 30, 25000)))
+    # PRD2b = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getD2Histogram, 3.0, 30, 50000)))
+    # PRD2c = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getD2Histogram, 3.0, 30, 100000)))
+    # PRD2d = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getD2Histogram, 3.0, 30, 200000)))
+    # PRD2e = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getD2Histogram, 3.0, 30, 400000)))
+
+    # plt.plot(recalls, PRD2a, 'y', label='25000 Points')
+    # plt.plot(recalls, PRD2b, 'b', label='50000 Points')
+    # plt.plot(recalls, PRD2c, 'c', label='100000 Points')
+    # plt.plot(recalls, PRD2d, 'k', label='200000 Points')
+    # plt.plot(recalls, PRD2e, 'r', label='400000 Points')
+
+
+
+    # # # Compare All Distance Metrics on Basic Shell Histograms (Chi2 doesn't work)
+    # # PReuc = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getShapeHistogram, 30, 3)))
+    # # PRcos = getPrecisionRecall(compareHistsCosine(makeAllHistograms(PointClouds, Normals, getShapeHistogram, 30, 3)))
+    # # PRchi = getPrecisionRecall(compareHistsChiSquared(makeAllHistograms(PointClouds, Normals, getShapeHistogram, 30, 3)))
+    # # PRemd = getPrecisionRecall(compareHistsEMD1D(makeAllHistograms(PointClouds, Normals, getShapeHistogram, 30, 3)))
+
+    # # # Compare All Distance Metrics on D2 Histograms
+    # # PReuc = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getD2Histogram, 3.0, 30, 100000)))
+    # # PRcos = getPrecisionRecall(compareHistsCosine(makeAllHistograms(PointClouds, Normals, getD2Histogram, 3.0, 30, 100000)))
+    # # PRchi = getPrecisionRecall(compareHistsChiSquared(makeAllHistograms(PointClouds, Normals, getD2Histogram, 3.0, 30, 100000)))
+    # # PRemd = getPrecisionRecall(compareHistsEMD1D(makeAllHistograms(PointClouds, Normals, getD2Histogram, 3.0, 30, 100000)))
+    
+    # # # Compare All Distance Metrics on A3 Histograms
+    # # PReuc = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getA3Histogram, 30, 100000)))
+    # # PRcos = getPrecisionRecall(compareHistsCosine(makeAllHistograms(PointClouds, Normals, getA3Histogram, 30, 100000)))
+    # # PRchi = getPrecisionRecall(compareHistsChiSquared(makeAllHistograms(PointClouds, Normals, getA3Histogram, 30, 100000)))
+    # # PRemd = getPrecisionRecall(compareHistsEMD1D(makeAllHistograms(PointClouds, Normals, getA3Histogram, 30, 100000)))
+
+    # plt.plot(recalls, PReuc, 'b', label='Euclidean')
+    # plt.plot(recalls, PRcos, 'c', label='Cosine')
+    # plt.plot(recalls, PRchi, 'k', label='ChiSquared')
+    # plt.plot(recalls, PRemd, 'r', label='EMD1D')
+
+
+
+    # # Spin Images with different values of Dim
+    # PRSpin1 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 100, 2, 20)))
+    # PRSpin2 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 100, 2, 40)))
+    # PRSpin3 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 100, 2, 80)))
+    # PRSpin4 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 100, 2, 160)))
+    # PRSpin5 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 100, 2, 320)))
+
+    # plt.plot(recalls, PRSpin1, 'y', label='20 Pixels')
+    # plt.plot(recalls, PRSpin2, 'b', label='40 Pixels')
+    # plt.plot(recalls, PRSpin3, 'c', label='80 Pixels')
+    # plt.plot(recalls, PRSpin4, 'k', label='160 Pixels')
+    # plt.plot(recalls, PRSpin5, 'r', label='320 Pixels')
+
+
+
+    # Spin Images with different values of NAngles
+    PRSpin1 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 25, 2, 40)))
+    PRSpin2 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 50, 2, 40)))
+    PRSpin3 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 100, 2, 40)))
+    PRSpin4 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 200, 2, 40)))
+    PRSpin5 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getSpinImage, 400, 2, 40)))
+
+    plt.plot(recalls, PRSpin1, 'y', label='25 Angles')
+    plt.plot(recalls, PRSpin2, 'b', label='50 Angles')
+    plt.plot(recalls, PRSpin3, 'c', label='100 Angles')
+    plt.plot(recalls, PRSpin4, 'k', label='200 Angles')
+    plt.plot(recalls, PRSpin5, 'r', label='400 Angles')
+
+
+
     plt.xlabel('Recall')
     plt.ylabel('Precision')
     plt.legend()
     plt.show()
-    
-    #TODO: Finish this, run experiments.  Also in the above code, you might
-    #just want to load one point cloud and test your histograms on that first
-    #so you don't have to wait for all point clouds to load when making
-    #minor tweaks
