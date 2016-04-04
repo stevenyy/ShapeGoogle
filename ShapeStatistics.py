@@ -111,7 +111,7 @@ def getShapeShellHistogram(Ps, Ns, NShells, RMax, SPoints):
 def getShapeHistogramPCA(Ps, Ns, NShells, RMax):
     #Create a 2D histogram, with 3 eigenvalues for each shell
 
-    hist = np.zeros(NShells, 3)
+    hist = np.zeros((NShells, 3))
     bins = np.linspace(0, RMax, NShells, False)
     indx = np.digitize(np.sqrt(np.sum(np.square(Ps), axis=0)), bins)
     for i in range(NShells):
@@ -369,39 +369,39 @@ if __name__ == '__main__':
 
 
 
-    # # Compare All Features
-    # SPoints = getSphereSamples(2)
-    # HistsSH = makeAllHistograms(PointClouds, Normals, getShapeHistogram, 30, 3)
-    # HistsSSH = makeAllHistograms(PointClouds, Normals, getShapeShellHistogram, 30, 3, SPoints)
+    # Compare All Features
+    SPoints = getSphereSamples(2)
+    HistsSH = makeAllHistograms(PointClouds, Normals, getShapeHistogram, 30, 3)
+    HistsSSH = makeAllHistograms(PointClouds, Normals, getShapeShellHistogram, 30, 3, SPoints)
     HistsSHPCA = makeAllHistograms(PointClouds, Normals, getShapeHistogramPCA, 30, 3)
-    # HistsSpin = makeAllHistograms(PointClouds, Normals, getSpinImage, 100, 2, 40)
-    # # HistsEGI = makeAllHistograms(PointClouds, Normals, getEGIHistogram, SPoints)
-    # HistsA3 = makeAllHistograms(PointClouds, Normals, getA3Histogram, 30, 100000)
-    # HistsD2 = makeAllHistograms(PointClouds, Normals, getD2Histogram, 3.0, 30, 100000)
+    HistsSpin = makeAllHistograms(PointClouds, Normals, getSpinImage, 100, 2, 40)
+    # HistsEGI = makeAllHistograms(PointClouds, Normals, getEGIHistogram, SPoints)
+    HistsA3 = makeAllHistograms(PointClouds, Normals, getA3Histogram, 30, 100000)
+    HistsD2 = makeAllHistograms(PointClouds, Normals, getD2Histogram, 3.0, 30, 100000)
 
-    # DSH = compareHistsEuclidean(HistsSH)
-    # DSSH = compareHistsEuclidean(HistsSSH)
+    DSH = compareHistsEuclidean(HistsSH)
+    DSSH = compareHistsEuclidean(HistsSSH)
     DSSHPCA = compareHistsEuclidean(HistsSHPCA)
-    # DSpin = compareHistsEuclidean(HistsSpin)
-    # # DEGI = compareHistsEuclidean(HistsEGI)
-    # DA3 = compareHistsEuclidean(HistsA3)
-    # DD2 = compareHistsEuclidean(HistsD2)
+    DSpin = compareHistsEuclidean(HistsSpin)
+    # DEGI = compareHistsEuclidean(HistsEGI)
+    DA3 = compareHistsEuclidean(HistsA3)
+    DD2 = compareHistsEuclidean(HistsD2)
 
-    # PRSH = getPrecisionRecall(DSH)
-    # PRSSH = getPrecisionRecall(DSSH)
+    PRSH = getPrecisionRecall(DSH)
+    PRSSH = getPrecisionRecall(DSSH)
     PRSHPCA = getPrecisionRecall(DSSHPCA)
-    # PRSpin = getPrecisionRecall(DSpin)
-    # # PREGI = getPrecisionRecall(DEGI)
-    # PRA3 = getPrecisionRecall(DA3)
-    # PRD2 = getPrecisionRecall(DD2)
+    PRSpin = getPrecisionRecall(DSpin)
+    # PREGI = getPrecisionRecall(DEGI)
+    PRA3 = getPrecisionRecall(DA3)
+    PRD2 = getPrecisionRecall(DD2)
 
-    # plt.plot(recalls, PRSH, 'g', label='Basic Shell')
-    # plt.plot(recalls, PRSSH, 'y', label='Sorted Sectors')
+    plt.plot(recalls, PRSH, 'g', label='Basic Shell')
+    plt.plot(recalls, PRSSH, 'y', label='Sorted Sectors')
     plt.plot(recalls, PRSHPCA, 'm', label='Shell PCA')
-    # plt.plot(recalls, PRSpin, 'b', label='Spin')
-    # # plt.plot(recalls, PREGI, 'c', label='EGI')
-    # plt.plot(recalls, PRA3, 'k', label='A3')
-    # plt.plot(recalls, PRD2, 'r', label='D2')
+    plt.plot(recalls, PRSpin, 'b', label='Spin')
+    # plt.plot(recalls, PREGI, 'c', label='EGI')
+    plt.plot(recalls, PRA3, 'k', label='A3')
+    plt.plot(recalls, PRD2, 'r', label='D2')
 
     
 
@@ -494,3 +494,5 @@ if __name__ == '__main__':
     plt.ylabel('Precision')
     plt.legend()
     plt.show()
+
+
