@@ -55,7 +55,7 @@ def getSphereSamples(res = 2):
 #Purpose: To compute PCA on a point cloud
 #Inputs: X (3 x N array representing a point cloud)
 def doPCA(X):
-    return np.linalg.eig(X.dot(X.T))
+    return np.linalg.eigh(X.dot(X.T))
 
 #########################################################
 ##                SHAPE DESCRIPTORS                    ##
