@@ -87,11 +87,11 @@ def getShapeShellHistogram(Ps, Ns, NShells, RMax, SPoints):
     hist = np.zeros((NShells, NSectors))    
     bins = np.linspace(0, RMax, NShells, False)
 
-    indx =  np.digitize(np.sqrt(np.sum(np.square(Ps, Ps), axis=0)), bins)
+    indx =  np.digitize(np.sqrt(np.sum(np.square(Ps), axis=0)), bins)
     for i in range(NShells):
         sub = Ps[:, indx == i]
-        D = np.dot(sub.T, SPoints)
-        dir = np.argmax(D, 1) 
+        D = sub.T.dot(SPoints)
+        dir = np.argmax(D, axis=1) 
         count = np.bincount(dir)
         hist[i, :count.shape[0]] = np.sort(count)[::-1] 
     return hist.flatten() #Flatten the 2D histogram to a 1D array
