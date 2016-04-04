@@ -89,11 +89,10 @@ def getShapeShellHistogram(Ps, Ns, NShells, RMax, SPoints):
 
     indx =  np.digitize(np.sqrt(np.sum(np.square(Ps), axis=0)), bins)
     for i in range(NShells):
-        sub = Ps[:, indx == i]
-        D = sub.T.dot(SPoints)
-        dir = np.argmax(D, axis=1) 
-        count = np.bincount(dir)
-        hist[i, :count.shape[0]] = np.sort(count)[::-1] 
+        subList = Ps[:, indx == i]
+        dirList = np.argmax(subList.T.dot(SPoints), axis=1) #across row, size=#SizeOfShell
+        count = np.bincount(dirList)
+        hist[i, :count.shape[0]] = np.sort(count)[::-1] #using double slicing to reverse the sort order
     return hist.flatten() #Flatten the 2D histogram to a 1D array
 
     #alternative approach
@@ -111,8 +110,14 @@ def getShapeShellHistogram(Ps, Ns, NShells, RMax, SPoints):
 #to be used to cluster shells
 def getShapeHistogramPCA(Ps, Ns, NShells, RMax):
     #Create a 2D histogram, with 3 eigenvalues for each shell
-    hist = np.zeros((NShells, 3))
-    ##TODO: Finish this; fill in hist
+
+    hist = np.zeros(NShells, 3)
+    bins = np.linspace(0, RMax, NShells, False)
+    indx = np.digitize(np.sqrt(np.sum(np.square(Ps), axis=0)), bins)
+    for i in range(NShells):
+        sub = Ps[:, indx == i]
+        eigs = np.linalg.eig(sub.dot(sub.T))
+        hist[i, :] = np.sort(eigs)[::-1] # reverse order
     return hist.flatten() #Flatten the 2D histogram to a 1D array
 
 #Purpose: To create shape histogram of the pairwise Euclidean distances between
