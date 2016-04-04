@@ -403,7 +403,13 @@ if __name__ == '__main__':
     plt.plot(recalls, PRA3, 'k', label='A3')
     plt.plot(recalls, PRD2, 'r', label='D2')
 
-    
+
+
+    # # Random Histogram
+    # PRrand = getPrecisionRecall(compareHistsEuclidean(np.random.randn(30, NRandSamples)))
+    # plt.plot(recalls, PRrand, 'r', label='Random Histogram')
+
+
 
     # # Basic Shell Histograms with different values of NShells
     # PRSH1 = getPrecisionRecall(compareHistsEuclidean(makeAllHistograms(PointClouds, Normals, getShapeHistogram, 10, 3)))
